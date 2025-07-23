@@ -41,3 +41,4 @@ def test_cudnn():
 
 if __name__ == "__main__":
     test_cudnn()
+    print('1')
