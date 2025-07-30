@@ -127,7 +127,7 @@ train:
   # batch size = 192, lr = 1e-4, total training steps = 25k
   # Our filtered laion2b-en (15M images)
   # batch size = 256, lr = 1e-4 (first 30k), 1e-5 (next 50k), total training steps = 80k
-  batch_size: 6
+  batch_size: 12
   num_workers: 10
   train_steps: 3000
   log_every: 5
@@ -149,18 +149,18 @@ paired_dataset:
       data_sources:
         - lq_path: ../lq/0.6ml
           hq_path: ../hq/0.6ml
-        - lq_path: ../lq/1.2ml
-          hq_path: ../hq/0.6ml
-        - lq_path: ../lq/1.8ml
-          hq_path: ../hq/0.6ml
-        - lq_path: ../lq/2.4ml
-          hq_path: ../hq/2.4ml
-        - lq_path: ../lq/2.8ml
-          hq_path: ../hq/2.4ml
-        - lq_path: ../lq/3.2ml
-          hq_path: ../hq/2.4ml
-        - lq_path: ../lq/3.6ml
-          hq_path: ../hq/2.4ml
+        # - lq_path: ../lq/1.2ml
+        #   hq_path: ../hq/0.6ml
+        # - lq_path: ../lq/1.8ml
+        #   hq_path: ../hq/0.6ml
+        # - lq_path: ../lq/2.4ml
+        #   hq_path: ../hq/2.4ml
+        # - lq_path: ../lq/2.8ml
+        #   hq_path: ../hq/2.4ml
+        # - lq_path: ../lq/3.2ml
+        #   hq_path: ../hq/2.4ml
+        # - lq_path: ../lq/3.6ml
+        #   hq_path: ../hq/2.4ml
 
       # 'split' 指定要使用哪个子目录的数据: 'train', 'validate', 或 'test'
       split: train

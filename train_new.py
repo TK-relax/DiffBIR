@@ -18,6 +18,8 @@ from torch.utils.tensorboard import SummaryWriter
 from diffbir.model import ControlLDM, Diffusion
 from diffbir.utils.common import instantiate_from_config, to, log_txt_as_img
 from diffbir.sampler import SpacedSampler
+torch.cuda.empty_cache()
+
 
 
 def main(args) -> None:

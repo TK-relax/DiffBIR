@@ -90,7 +90,6 @@ class PairedImageDataset(Dataset):
 
                 # --- 调试打印: 当前正在处理哪个HQ文件 ---
                 # 使用一个空行来分隔每个HQ文件的处理日志，使输出更清晰
-                print(f"\n  [处理HQ文件]: {hq_file_path.name}")
 
                 # 2. 根据 `use_dynamic_lq` 的设置，决定查找策略
                 if self.use_dynamic_lq:
@@ -102,8 +101,6 @@ class PairedImageDataset(Dataset):
 
                 # --- 调试打印: 打印用于查找LQ文件的搜索模式 ---
                 # 这一点对于检查 `use_dynamic_lq` 开关是否按预期工作至关重要
-                print(f"    - 正在使用模式 '{search_pattern}' 在LQ目录 '{lq_split_path}' 中查找...")
-
                 matched_lq_paths = list(lq_split_path.glob(search_pattern))
 
                 # --- 调试打印: 报告查找结果 ---
@@ -111,7 +108,6 @@ class PairedImageDataset(Dataset):
                     print("    - 结果: 未找到任何匹配的LQ文件。")
                     continue  # 继续处理下一个HQ文件
 
-                print(f"    - 结果: 找到 {len(matched_lq_paths)} 个潜在的LQ文件。")
 
                 # 3. 将所有找到的有效配对加入列表
                 for lq_path in matched_lq_paths:
