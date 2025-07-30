@@ -129,10 +129,10 @@ train:
   # batch size = 256, lr = 1e-4 (first 30k), 1e-5 (next 50k), total training steps = 80k
   batch_size: 6
   num_workers: 10
-  train_steps: 30000
-  log_every: 50
-  ckpt_every: 10000
-  image_every: 1000
+  train_steps: 3000
+  log_every: 5
+  ckpt_every: 1000
+  image_every: 100
   resume: weights/v2.pth
   noise_aug_timestep: 0
 
@@ -147,12 +147,20 @@ paired_dataset:
     params:
       # 'data_sources' 是一个列表，可以包含多组成对的数据源
       data_sources:
-        - lq_path: ../data_test_lq/1.2ml
-          hq_path: ../data_test_hq/1.2ml
-        - lq_path: ../data_test_lq/2.4ml
-          hq_path: ../data_test_hq/2.4ml
-        - lq_path: ../data_test_lq/3.6ml
-          hq_path: ../data_test_hq/2.4ml
+        - lq_path: ../lq/0.6ml
+          hq_path: ../hq/0.6ml
+        - lq_path: ../lq/1.2ml
+          hq_path: ../hq/0.6ml
+        - lq_path: ../lq/1.8ml
+          hq_path: ../hq/0.6ml
+        - lq_path: ../lq/2.4ml
+          hq_path: ../hq/2.4ml
+        - lq_path: ../lq/2.8ml
+          hq_path: ../hq/2.4ml
+        - lq_path: ../lq/3.2ml
+          hq_path: ../hq/2.4ml
+        - lq_path: ../lq/3.6ml
+          hq_path: ../hq/2.4ml
 
       # 'split' 指定要使用哪个子目录的数据: 'train', 'validate', 或 'test'
       split: train
@@ -160,7 +168,7 @@ paired_dataset:
       # 【新增】是否启用动态LQ数据。
       # true: 一个HQ会匹配所有对应的 LQ (例如 imageA -> imageA_001, imageA_002, ...)
       # false (或不设置): 一个HQ只匹配_001后缀的LQ (例如 imageA -> imageA_001)
-      use_dynamic_lq: true
+      use_dynamic_lq: false
 
       # 【可选】输出图像的统一尺寸。如果不设置，将默认使用 512。
       # out_size: 256 # 如果您想覆盖默认的512，可以取消此行注释

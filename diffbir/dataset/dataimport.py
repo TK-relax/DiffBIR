@@ -119,7 +119,6 @@ class PairedImageDataset(Dataset):
                     if any(lq_path.name.lower().endswith(ext.strip('*')) for ext in supported_extensions):
                         # --- 调试打印: 打印每一个成功建立的配对 ---
                         # 这是最关键的调试信息，显示了最终采纳的匹配结果
-                        print(f"      ✅ [建立配对] HQ: {hq_file_path.name} <--> LQ: {lq_path.name}")
                         self.image_pairs.append({
                             'lq': str(lq_path),
                             'hq': str(hq_file_path)

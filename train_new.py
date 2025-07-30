@@ -185,7 +185,7 @@ def main(args) -> None:
 
             # 定期生成并保存可视化图像
             if global_step % cfg.train.image_every == 0 or global_step == 1:
-                N = min(8, gt.shape[0])  # 可视化的样本数量
+                N = min(4, gt.shape[0])  # 可视化的样本数量
                 log_gt, log_lq, log_clean = gt[:N], lq[:N], clean[:N]
                 log_cond, log_cond_aug = {k: v[:N] for k, v in cond.items()}, {k: v[:N] for k, v in cond_aug.items()}
                 log_prompt = prompt[:N]
