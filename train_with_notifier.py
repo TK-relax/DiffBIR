@@ -5,9 +5,7 @@ from argparse import ArgumentParser
 import copy
 from collections import defaultdict
 from pathlib import Path
-import smtplib  # 【新】导入SMTP库，用于发送邮件
-from email.mime.text import MIMEText  # 【新】导入邮件文本处理模块
-from email.header import Header  # 【新】导入邮件头部处理模块
+from email_notifier import send_email
 
 from omegaconf import OmegaConf
 import torch
@@ -38,49 +36,15 @@ torch.cuda.empty_cache()
 # SMTP服务器地址 (以163邮箱为例)
 MAIL_HOST = "smtp.163.com"
 # 您的邮箱账号
-MAIL_USER = "your_email@163.com"  # 例如: "your_username@163.com"
+MAIL_USER = "a912206109@163.com"  # 例如: "your_username@163.com"
 # 您的邮箱授权码 (注意：不是登录密码)
-MAIL_PASS = "YOUR_APP_PASSWORD"  # 例如: "RNeTFnPTtiQSEGqS"
+MAIL_PASS = "RNeTFnPTtiQSEGqS"  # 例如: "RNeTFnPTtiQSEGqS"
 # 发件人邮箱，与MAIL_USER保持一致
-SENDER = "your_email@163.com"
+SENDER = "a912206109@163.com"
 # 收件人邮箱列表，可以有多个
-RECEIVERS = ["receiver1@qq.com", "receiver2@example.com"]
+RECEIVERS = ["1372707774@qq.com"]
 
-def send_notification_email(subject: str, content: str) -> bool:
-    """
-    发送通知邮件的函数。
 
-    Args:
-        subject (str): 邮件主题。
-        content (str): 邮件正文内容。
-
-    Returns:
-        bool: 如果发送成功返回 True，否则返回 False。
-    """
-    message = MIMEText(content, 'plain', 'utf-8')
-    message['From'] = Header("云端训练监控机器人", 'utf-8')
-    message['To'] = Header(",".join(RECEIVERS), 'utf-8')
-    message['Subject'] = Header(subject, 'utf-8')
-
-    try:
-        # 使用SSL加密方式连接SMTP服务器
-        smtp_obj = smtplib.SMTP_SSL(MAIL_HOST, 465)
-        smtp_obj.login(MAIL_USER, MAIL_PASS)
-        smtp_obj.sendmail(SENDER, RECEIVERS, message.as_string())
-        smtp_obj.quit()
-        print("[邮件通知] 邮件已成功发送。")
-        return True
-    except smtplib.SMTPException as e:
-        print(f"[邮件通知] 错误：无法发送邮件。原因: {e}")
-        print("常见错误原因：")
-        print("1. 163邮箱的SMTP服务未开启。")
-        print("2. 使用的是邮箱登录密码，而不是授权码。")
-        print("3. 邮箱账号或授权码填写错误。")
-        print("4. 云端容器网络限制，无法访问外部SMTP服务器的465端口。")
-        return False
-    except Exception as e:
-        print(f"[邮件通知] 发生未知错误: {e}")
-        return False
 
 
 def log_visualization_images(
@@ -344,24 +308,31 @@ def main(args) -> None:
             print("正在尝试发送邮件通知...")
             print("="*80 + "\n")
             
-            # 定义邮件主题和内容
-            subject = "【警报】云端训练因显存不足而中断"
-            content = f"""
-尊敬的用户：
+            # 邮件主题
+            email_subject = "云端容器训练显存不足通知"
 
-您好！
+            # 邮件正文
+            email_content = """
+            尊敬的用户：
 
-您在云端容器上执行的训练任务因显存不足 (CUDA Out of Memory) 而被迫中断。
+            您好！
 
-实验目录: {cfg.train.exp_dir}
-中断步骤: {global_step}
+            云端训练因显存不足而中断
 
-请检查您的批次大小（batch size）、模型大小或数据分辨率等配置。
+            请及时查看训练结果。
 
-此邮件为系统自动发送，请勿回复。
-"""
-            # 发送邮件
-            send_notification_email(subject, content)
+            此邮件为系统自动发送，请勿回复。
+            """
+
+            success = send_email(
+                mail_host=MAIL_HOST,
+                mail_user=MAIL_USER,
+                mail_pass=MAIL_PASS,
+                sender=SENDER,
+                receivers=RECEIVERS,
+                subject=email_subject,
+                content=email_content
+            )
         # 抛出异常，让程序正常退出
         raise e
 
@@ -378,23 +349,32 @@ def main(args) -> None:
             print("="*80 + "\n")
             subject = f"【警报】云端训练因未知错误中断 ({type(e).__name__})"
             content = f"""
-尊敬的用户：
+            尊敬的用户：
 
-您好！
+            您好！
 
-您在云端容器上执行的训练任务因发生未知错误而被迫中断。
+            您在云端容器上执行的训练任务因发生未知错误而被迫中断。
 
-实验目录: {cfg.train.exp_dir}
-中断步骤: {global_step}
-错误类型: {type(e).__name__}
-错误详情:
-{traceback.format_exc()}
+            实验目录: {cfg.train.exp_dir}
+            中断步骤: {global_step}
+            错误类型: {type(e).__name__}
+            错误详情:
+            {traceback.format_exc()}
 
-请检查日志以获取详细信息。
+            请检查日志以获取详细信息。
 
-此邮件为系统自动发送，请勿回复。
-"""
-            send_notification_email(subject, content)
+            此邮件为系统自动发送，请勿回复。
+            """
+            success = send_email(
+                mail_host=MAIL_HOST,
+                mail_user=MAIL_USER,
+                mail_pass=MAIL_PASS,
+                sender=SENDER,
+                receivers=RECEIVERS,
+                subject=email_subject,
+                content=email_content
+            )
+
         raise e
 
     else:
@@ -409,21 +389,29 @@ def main(args) -> None:
             # 定义邮件主题和内容
             subject = "【通知】云端训练任务已成功完成"
             content = f"""
-尊敬的用户：
+            尊敬的用户：
 
-您好！
+            您好！
 
-您在云端容器上执行的训练任务已经成功完成。
+            您在云端容器上执行的训练任务已经成功完成。
 
-实验目录: {cfg.train.exp_dir}
-总训练步数: {global_step}
+            实验目录: {cfg.train.exp_dir}
+            总训练步数: {global_step}
 
-请及时查看训练结果和保存的模型。
+            请及时查看训练结果和保存的模型。
 
-此邮件为系统自动发送，请勿回复。
-"""
+            此邮件为系统自动发送，请勿回复。
+            """
             # 发送邮件
-            send_notification_email(subject, content)
+            success = send_email(
+                mail_host=MAIL_HOST,
+                mail_user=MAIL_USER,
+                mail_pass=MAIL_PASS,
+                sender=SENDER,
+                receivers=RECEIVERS,
+                subject=email_subject,
+                content=email_content
+            )
 
     finally:
         # 【重要改动】无论成功还是失败，最后都会执行这里的代码
